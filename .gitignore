@@ -1,0 +1,18 @@
+# Config files
+configs/*.yml
+nginx.conf
+docker-compose.yml
+key.bin
+
+games/*
+!games/README
+
+# Cloned repositories
+repos/*
+
+# Engine build cloned repositories
+engine/easyrpg_buildscripts
+engine/liblcf
+engine/ynoengine
+
+engine/output

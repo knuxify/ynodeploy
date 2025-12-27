@@ -1,0 +1,153 @@
+# Replace CHANGEME with the game's short name:
+# upstream server_CHANGEME_socket {
+#     server unix:/opt/server-sockets/CHANGEME.sock;
+# }
+
+upstream server_unconscious_socket {
+    server unix:/opt/server-sockets/unconscious.sock;
+}
+
+upstream rankings_socket {
+    server unix:/opt/rankings-sockets/rankings.sock;
+}
+
+map $http_upgrade $connection_upgrade {
+	default upgrade;
+	''      close;
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+	server_name yno.local;
+
+	index index.html index.php;
+	root /opt/ynohome;
+
+	location /unconscious {
+		alias /opt/client;
+		try_files $uri $uri/ =404;
+
+		location ~ \.php$ {
+			include fastcgi_params;
+			fastcgi_pass php-fpm:9000;
+            fastcgi_param SCRIPT_FILENAME $request_filename;
+        }
+
+        location /unconscious/images/charsets/unconscious {
+			alias /opt/games/unconscious/CharSet;
+			try_files $uri $uri/ =404;
+		}
+
+		location ^~ /unconscious/locations/ {
+			alias /opt/locations/;
+			try_files $uri $uri/ =404;
+		}
+
+		location ^~ /unconscious/lang/badge/ {
+			alias /opt/badges/lang/;
+			try_files $uri $uri/ =404;
+		}
+	}
+
+	location /assets {
+		sendfile           on;
+		sendfile_max_chunk 1m;
+
+		alias /opt/assets;
+		try_files $uri =404;
+    }
+
+	location /badges {
+		sendfile           on;
+		sendfile_max_chunk 1m;
+
+		alias /opt/badges;
+		try_files $uri =404;
+    }
+
+	location /preloads {
+		sendfile           on;
+		sendfile_max_chunk 1m;
+
+		alias /opt/preloads;
+		try_files $uri =404;
+    }
+
+	location /data {
+		sendfile           on;
+		sendfile_max_chunk 1m;
+
+		alias /opt/games;
+		try_files $uri =404;
+    }
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+	server_name connect.yno.local;
+
+	# Set CORS headers for actual requests
+	set $cors_origin "";
+	if ($http_origin ~* ^https?://(yno\.local|connect\.yno\.local)$) {
+		set $cors_origin $http_origin;
+	}
+
+	location /unconscious/ {
+		proxy_pass http://server_unconscious_socket/;
+
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+		# Needed for websocket:
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection $connection_upgrade;
+
+		proxy_read_timeout 86400;
+		proxy_send_timeout 86400;
+		# Handle preflight OPTIONS requests
+		if ($request_method = 'OPTIONS') {
+			add_header 'Access-Control-Allow-Origin' $http_origin always;
+			add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+			add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Accept, Origin' always;
+			add_header 'Access-Control-Max-Age' 86400 always;
+			add_header 'Content-Length' 0;
+			add_header 'Content-Type' 'text/plain';
+			return 204;
+		}
+
+		add_header 'Access-Control-Allow-Origin' $cors_origin always;
+		add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+		add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Accept, Origin' always;
+		add_header 'Access-Control-Allow-Credentials' 'true' always;
+	}
+
+	location /rankings/ {
+		proxy_pass http://rankings_socket/;
+
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Host $host;
+		proxy_set_header X-Forwarded-Prefix /;
+
+		# Handle preflight OPTIONS requests
+		if ($request_method = 'OPTIONS') {
+			add_header 'Access-Control-Allow-Origin' $http_origin always;
+			add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+			add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Accept, Origin' always;
+			add_header 'Access-Control-Max-Age' 86400 always;
+			add_header 'Content-Length' 0;
+			add_header 'Content-Type' 'text/plain';
+			return 204;
+		}
+
+		add_header 'Access-Control-Allow-Origin' $cors_origin always;
+		add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, PATCH, OPTIONS' always;
+		add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Accept, Origin' always;
+		add_header 'Access-Control-Allow-Credentials' 'true' always;
+	}
+}

@@ -1,0 +1,85 @@
+From 7e6eeff85fdc5da9294c93d735bf87ce84f6ddfa Mon Sep 17 00:00:00 2001
+From: knuxify <knuxify@gmail.com>
+Date: Sat, 27 Dec 2025 18:49:19 +0100
+Subject: [PATCH] buildscript fixes
+
+---
+ emscripten/2_build_toolchain.sh |   4 ++--
+ shared/common.sh                |  11 ++++++++---
+ shared/packages.ini             |   2 +-
+ shared/packages.sh              | Bin 4960 -> 4978 bytes
+ 4 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/emscripten/2_build_toolchain.sh b/emscripten/2_build_toolchain.sh
+index 6fca1a5..9fa31c1 100755
+--- a/emscripten/2_build_toolchain.sh
++++ b/emscripten/2_build_toolchain.sh
+@@ -111,7 +111,7 @@ install_lib $SPEEXDSP_DIR $SPEEXDSP_ARGS
+ #install_lib_cmake $WILDMIDI_DIR $WILDMIDI_ARGS
+ install_lib_cmake $OPUS_DIR $OPUS_ARGS -DOPUS_STACK_PROTECTOR=OFF
+ install_lib $OPUSFILE_DIR $OPUSFILE_ARGS
+-install_lib_cmake $FLUIDSYNTH_DIR $FLUIDSYNTH_ARGS
++#install_lib_cmake $FLUIDSYNTH_DIR $FLUIDSYNTH_ARGS
+ install_lib_cmake $NLOHMANNJSON_DIR $NLOHMANNJSON_ARGS
+ install_lib_meson $INIH_DIR $INIH_ARGS
+ #install_lib $LHASA_DIR $LHASA_ARGS
+@@ -127,4 +127,4 @@ unset TARGET_HOST
+ install_lib_icu_cross
+ icu_force_data_install
+ 
+-install_lib_liblcf
++#install_lib_liblcf
+diff --git a/shared/common.sh b/shared/common.sh
+index f32865f..37355be 100644
+--- a/shared/common.sh
++++ b/shared/common.sh
+@@ -21,6 +21,11 @@ function download {
+ 
+ 	file=${url##*/}
+ 
++	if [ -e "$file" ]; then
++		msg "Already downloaded, skipping."
++		return
++	fi
++
+ 	# Try cache folder first
+ 	if [ "x$EASYRPG_PATH_DOWNLOADCACHE" != "x" ]; then
+ 		if [ -e $EASYRPG_PATH_DOWNLOADCACHE/$file ]; then
+@@ -230,9 +235,9 @@ function install_lib_meson {
+ 		shift
+ 
+ 		rm -rf build
+-
+-		$MESON_WRAPPER meson setup build --prefix $PLATFORM_PREFIX --buildtype=plain \
+-			-Ddefault_library=static --libdir=lib $MESON_CROSS $@
++		export PKG_CONFIG=$(which pkg-config)
++		$MESON_WRAPPER meson setup build --prefix $PLATFORM_PREFIX --pkg-config-path=$PLATFORM_PREFIX/lib/pkgconfig --buildtype=plain \
++			-Ddefault_library=static --libdir=lib --includedir=include $MESON_CROSS $@
+ 		meson compile -C build
+ 		meson install -C build
+ 	)
+diff --git a/shared/packages.ini b/shared/packages.ini
+index 0c91a1d..0c7468c 100644
+--- a/shared/packages.ini
++++ b/shared/packages.ini
+@@ -122,7 +122,7 @@ arguments = "-DFLUIDLITE_BUILD_STATIC=ON -DFLUIDLITE_BUILD_SHARED=OFF"
+ version = 3.12.0
+ url = "https://github.com/nlohmann/json/archive/v${version}.tar.gz"
+ directory = "json-${version}"
+-arguments = "-DJSON_BuildTests=OFF"
++arguments = "-DJSON_BuildTests=OFF -DJSON_Install=ON"
+ anitya_id = 11152
+ 
+ [fmt]
+diff --git a/shared/packages.sh b/shared/packages.sh
+index 0aff40b587e4764f5f9ce809ba379e950848da20..25ab156a0403468372aea97d141219c02d11687b 100644
+GIT binary patch
+delta 31
+mcmaE$_DO96KfjQIu8UW&zhAs(UU5lcPL8d=-)4UPKo$V2r3wH5
+
+delta 12
+TcmeyQ_CRd|KmTS${y-K0A~ggh
+
+-- 
+2.52.0
+

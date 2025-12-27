@@ -1,0 +1,97 @@
+services:
+  # MariaDB as the database
+  db:
+    image: mariadb:12
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ynoroot
+      MYSQL_USER: yno
+      MYSQL_PASSWORD: ynouser
+      MYSQL_DATABASE: ynodb
+    volumes:
+      - db_data:/var/lib/mysql:rw
+      - ./schema.sql:/docker-entrypoint-initdb.d/99-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+  # ynoserver; each game needs its own server.
+  # Replace CHANGEME with the name of the game.
+  server-CHANGEME:
+    build:
+      context: ./repos/ynoserver
+      dockerfile: ../../docker/ynoserver/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./configs/CHANGEME.yml:/opt/ynoserver/config.yml:ro
+      - ./games/CHANGEME:/opt/games/CHANGEME:ro
+      - ./key.bin:/opt/ynoserver/key.bin:ro
+      - ynoserver-sockets:/opt/ynoserver/sockets:rw
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+
+  # ynorankings; one shared server for all games.
+  rankings:
+    build:
+      context: ./repos/ynorankings
+      dockerfile: ../../docker/ynorankings/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./configs/rankings.yml:/opt/ynorankings/config.yml:ro
+      - ynorankings-sockets:/opt/ynorankings/sockets:rw
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+
+  # php-fpm for index.php in forest-orb
+  php-fpm:
+    image: php:8.5.0-fpm
+    restart: unless-stopped
+    volumes:
+      - ./repos/forest-orb/:/opt/client:ro
+
+  # nginx as the reverse-proxy to tie everything together
+  proxy:
+    image: nginx:1-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./games:/opt/games:ro
+      - ./repos/forest-orb/:/opt/client:ro
+      - ./repos/ynolocations:/opt/locations:ro
+      - ./repos/ynohome:/opt/ynohome:ro
+      - ./repos/ynobadges:/opt/badges:ro
+      - ./repos/ynopreloads:/opt/preloads:ro
+      - ynoserver-sockets:/opt/server-sockets:rw
+      - ynorankings-sockets:/opt/rankings-sockets:rw
+    links:
+      - php-fpm
+
+volumes:
+  # ynoserver exposes sockets for each game in the sockets dir (<game>.sock).
+  # This directory needs to be accessed by the reverse proxy.
+  ynoserver-sockets:
+
+  # ynorankings exposes a socket for the rankings server as rankings.sock.
+  # This directory needs to be accessed by the reverse proxy.
+  ynorankings-sockets:
+
+  # Persistent data for the database
+  db_data:
+
+networks:
+  # Separate network for servers and DB. Proxy and php-fpm do not need DB
+  # access.
+  backend:
