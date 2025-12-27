@@ -13,28 +13,30 @@ Prerequisites:
    `$ git clone https://github.com/knuxify/ynodeploy; cd ynodeploy`
 2. Run `./scripts/init.sh` to check for dependencies and clone the other repositories;
    they will end up in the `repos` directory.
-3. Open `docker-compose.yml`. If you want to change the DB credentials, do so here.
-4. Copy `configs/rankings.yml.example` to `configs/rankings.yml`. If you didn't change
+3. Copy `docker-compose.yml.example` to `docker-compose.yml`, and `nginx.conf.example`
+   to `nginx.conf`.
+4. Open `docker-compose.yml`. If you want to change the DB credentials, do so here.
+5. Copy `configs/rankings.yml.example` to `configs/rankings.yml`. If you didn't change
    the DB credentials in the previous step, you do not need to change anything here.
-5. For every game you want to add (replace `gamename` with the short name of the
+6. For every game you want to add (replace `gamename` with the short name of the
    game you want to add):
-5.1. Copy `configs/server.yml.example` to `configs/gamename.yml`.
-     Open the file and modify it according to the comments.
-5.2. Place the game files in `games/CHANGEME`.
-5.3. In `nginx.conf`, look for the commented out samples that mention the string `CHANGEME`;
-     replace `gamename` with the short name of the game.
-5.4. In `docker-compose.yml`, find the `server-CHANGEME` example; uncomment it and replace
+    * Copy `configs/server.yml.example` to `configs/gamename.yml`.
+      Open the file and modify it according to the comments.
+    * Place the game files in `games/CHANGEME`.
+    * In `nginx.conf`, look for the commented out samples that mention the string `CHANGEME`;
+      replace `gamename` with the short name of the game.
+    * In `docker-compose.yml`, find the `server-CHANGEME` example; uncomment it and replace
      `CHANGEME` with the short name.
-6. Run the container with `docker compose up -d`.
-6.1. You may need to start the Docker service first.
-6.2. If you get errors about insufficient permissions, use `sudo` or add your user
+7. Run the container with `docker compose up -d`.
+    * You may need to start the Docker service first.
+    * If you get errors about insufficient permissions, use `sudo` or add your user
      to the `docker` group or equivalent for your distribution - consult your
      distro's docs.
-7. Open `repos/forest-orb`; replace all mentions of `ynoproject.net` with `yno.local`.
+8. Open `repos/forest-orb`; replace all mentions of `ynoproject.net` with `yno.local`.
    Replace `https://` with `http://` and `wss://` with `ws://`.
-8. Open `repos/ynoserver`; replace all mentions of `ynoproject.net` with `yno.local`.
-8. Open `repos/ynohome`; replace all mentions of `ynoproject.net` with `yno.local`.
-10. Get `ynoengine-simd.js`, `ynoengine-simd.wasm` and `easyrpg-player.wasm`, either
+9. Open `repos/ynoserver`; replace all mentions of `ynoproject.net` with `yno.local`.
+10. Open `repos/ynohome`; replace all mentions of `ynoproject.net` with `yno.local`.
+11. Get `ynoengine-simd.js`, `ynoengine-simd.wasm` and `easyrpg-player.wasm`, either
    from ynoproject.net (`https://ynoproject.net/2kki/(filename)`), or by compiling
    them yourself (see `engine` folder for build scripts).
    Place them in `repos/ynoserver`.
