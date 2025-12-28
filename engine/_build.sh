@@ -6,7 +6,7 @@
 basedir="$(pwd)"
 
 cd "$basedir"/easyrpg_buildscripts/emscripten
-#./0_build_everything.sh
+./0_build_everything.sh
 
 export PATH="$PATH:$basedir/easyrpg_buildscripts/emscripten/bin" # for icu-config
 export CFLAGS="-O2 -g0 -sUSE_SDL=0"
@@ -18,9 +18,9 @@ export EMCC_CFLAGS="$EM_CFLAGS"
 export EM_PKG_CONFIG_PATH="$basedir/easyrpg_buildscripts/emscripten/lib/pkgconfig"
 
 cd "$basedir"/liblcf
-#autoreconf -fi
-#emconfigure ./configure --disable-shared --enable-static --prefix="$basedir/easyrpg_buildscripts/emscripten"
-#make install
+autoreconf -fi
+emconfigure ./configure --disable-shared --enable-static --prefix="$basedir/easyrpg_buildscripts/emscripten"
+make install
 
 cd "$basedir"/ynoengine
 
