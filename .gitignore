@@ -3,6 +3,7 @@ configs/*.yml
 nginx.conf
 docker-compose.yml
 key.bin
+key.txt
 
 games/*
 !games/README
