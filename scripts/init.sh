@@ -47,7 +47,15 @@ echo "ynoserver: Creating dummy word filter lists (filterwords.txt)..."
 touch repos/ynoserver/filterwords.txt
 
 # Generate key.bin (needed by ynoserver)
-echo "Generating key.bin for ynoserver..."
-echo -e "import os\nwith open('key.bin', 'wb+') as key: key.write(os.urandom(32))" | python3
+echo "Generating key.bin and key.txt..."
+python3 scripts/generate_key.py
+
+# Prepare engine
+echo "Preparing engine build..."
+cd engine
+./prepare.sh
+echo "Setting key in engine..."
+sed -i "s/^const unsigned char psk\[\] \= .*/const unsigned char psk\[\] \= \{ $(cat key.txt) \};/" ./ynoengine/src/multiplayer/yno_connection.cpp
+cd ..
 
 echo "All done!"

@@ -10,3 +10,5 @@ docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) minnaengine_emsdk ./_build.s
 cp easyrpg_buildscripts/emscripten/bin/ynoengine-simd.js output/ynoengine-simd.js
 cp easyrpg_buildscripts/emscripten/bin/ynoengine-simd.wasm output/ynoengine-simd.wasm
 cp easyrpg_buildscripts/emscripten/bin/ynoengine-simd.wasm output/easyrpg-player.wasm
+cp easyrpg_buildscripts/emscripten/bin/ynoengine-simd.js output/ynoengine.js
+cp easyrpg_buildscripts/emscripten/bin/ynoengine-simd.wasm output/ynoengine.wasm

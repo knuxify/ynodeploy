@@ -28,7 +28,7 @@ Prerequisites:
     * In `docker-compose.yml`, find the `server-CHANGEME` example; uncomment it and replace
      `CHANGEME` with the short name.
 7. Compile ynoengine using the scripts in the `engine` folder (see `engine/README.md`).
-   Copy `ynoengine-simd.js`, `ynoengine-simd.wasm` and `easyrpg-player.wasm` into `repos/ynoserver`.
+   Copy `ynoengine-simd.js`, `ynoengine-simd.wasm`, `ynoengine.js`, `ynoengine.wasm` and `easyrpg-player.wasm` into `repos/ynoserver`.
 8. Run the container with `docker compose up -d`.
     * You may need to start the Docker service first.
     * If you get errors about insufficient permissions, use `sudo` or add your user

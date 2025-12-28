@@ -24,6 +24,7 @@ make install
 
 cd "$basedir"/ynoengine
 
+if false; then
 emcmake cmake . -Bbuild -G Ninja --preset=yno-simd-release \
 	-DCMAKE_CXX_COMPILER_LAUNCHER="emcc" \
 	-DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_SHARED_LIBS=OFF \
@@ -37,6 +38,24 @@ emcmake cmake . -Bbuild -G Ninja --preset=yno-simd-release \
 cmake --build build --target clean
 cmake --build build
 cmake --build build --target install
+fi
+
+rm -r build
+
+emcmake cmake . -Bbuild -G Ninja --preset=yno-release \
+	-DCMAKE_CXX_COMPILER_LAUNCHER="emcc" \
+	-DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_SHARED_LIBS=OFF \
+	-DCMAKE_C_FLAGS="$CFLAGS $CPPFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS $CPPFLAGS" \
+	-DCMAKE_INSTALL_LIBDIR=lib \
+	-DCMAKE_INSTALL_PREFIX="$basedir/easyrpg_buildscripts/emscripten" \
+	-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+	-DCMAKE_PREFIX_PATH="$basedir/easyrpg_buildscripts/emscripten" \
+	-DCMAKE_FIND_ROOT_PATH="$basedir/easyrpg_buildscripts/emscripten"
+
+cmake --build build --target clean
+cmake --build build
+cmake --build build --target install
+
 
 echo ""
 echo "Done!"
