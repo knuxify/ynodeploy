@@ -1,0 +1,11 @@
+## Database user
+db_user: "yno"
+
+## Database user password
+db_pass: "ynouser"
+
+## Database server address (this depends on the name of the db service)
+db_addr: "tcp(db)"
+
+## Database name
+db_name: "ynodb"

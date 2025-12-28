@@ -1,0 +1,60 @@
+## Set to name of game
+game_name: "CHANGEME"
+
+## Path to game files (replace CHANGEME with directory name under `./games`)
+game_path: "/opt/games/CHANGEME"
+
+## Database user
+db_user: "yno"
+
+## Database user password
+db_pass: "ynouser"
+
+## Database server address
+db_addr: "tcp(db)"
+
+## Database name
+db_name: "ynodb"
+
+## Maps to exclude from multiplayer
+#sp_rooms: ""
+
+## Sounds to exclude from multiplayer
+#bad_sounds: ""
+
+## Pictures to sync in multiplayer
+#picture_names: ""
+
+## Picture prefixes to sync in multiplayer
+#picture_prefixes: ""
+
+## Battle Animation IDs to sync in multiplayer
+#battle_anim_ids: ""
+
+## Discord Webhook URL for chat bridge
+#chat_webhook: ""
+
+## Discord Webhook URL for community screenshots
+#screenshot_webhook: ""
+
+## Moderation settings for Discord integration
+moderation:
+## Bot token for messages
+  #bot_token: ""
+
+## Target channel for reports
+  #channel_id: ""
+
+## Mod role to be pinged in report posts
+  #mod_role_id: ""
+
+## Logging settings
+logging:
+  ## Size of log file (MB)
+  #max_size: 50
+
+  ## Log files to keep
+  #max_backups: 6
+
+  ## After how many days to remove logs
+  #max_age: 28
