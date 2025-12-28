@@ -54,6 +54,8 @@ exposed at http://connect.yno.local. You should add entries in your hosts file
 
 ## Maintenance
 
+**TODO** these scripts don't actually exist yet
+
 ### Updating YNO server components
 
 Run `./scripts/update-repos.sh`, which runs `git pull` in all subfolders of `repos`.
