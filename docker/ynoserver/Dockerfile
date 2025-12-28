@@ -22,6 +22,19 @@ RUN useradd -m -u ${UID} -g yno yno
 RUN mkdir -p sockets && \
     chown -R 10001:10001 sockets
 
+# Make logs directory and let yno user write to it
+RUN mkdir -p logs && \
+    chown -R 10001:10001 logs
+
+# Make saves directory and let yno user write to it
+RUN mkdir -p saves && \
+    chown -R 10001:10001 saves
+
+# Make screenshots directory and let yno user write to it
+RUN mkdir -p screenshots && \
+    chown -R 10001:10001 screenshots
+
+
 # Run ynoserver
 USER yno
 CMD ./ynoserver --config config.yml

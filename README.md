@@ -27,10 +27,8 @@ Prerequisites:
       replace `gamename` with the short name of the game.
     * In `docker-compose.yml`, find the `server-CHANGEME` example; uncomment it and replace
      `CHANGEME` with the short name.
-7. Get `ynoengine-simd.js`, `ynoengine-simd.wasm` and `easyrpg-player.wasm`, either
-   from ynoproject.net (`https://ynoproject.net/2kki/(filename)`), or by compiling
-   them yourself (see `engine` folder for build scripts).
-   Place them in `repos/ynoserver`.
+7. Compile ynoengine using the scripts in the `engine` folder (see `engine/README.md`).
+   Copy `ynoengine-simd.js`, `ynoengine-simd.wasm` and `easyrpg-player.wasm` into `repos/ynoserver`.
 8. Run the container with `docker compose up -d`.
     * You may need to start the Docker service first.
     * If you get errors about insufficient permissions, use `sudo` or add your user

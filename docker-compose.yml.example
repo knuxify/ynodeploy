@@ -28,10 +28,14 @@ services:
       dockerfile: ../../docker/ynoserver/Dockerfile
     restart: unless-stopped
     volumes:
+      - ./logs:/opt/ynoserver/logs:rw
       - ./configs/CHANGEME.yml:/opt/ynoserver/config.yml:ro
+      - ./repos/ynobadges:/opt/ynoserver/badges:ro
       - ./games/CHANGEME:/opt/games/CHANGEME:ro
       - ./key.bin:/opt/ynoserver/key.bin:ro
       - ynoserver-sockets:/opt/ynoserver/sockets:rw
+      - ynoserver-saves:/opt/ynoserver/saves:rw
+      - ynoserver-screenshots:/opt/ynoserver/screenshots:rw
     depends_on:
       db:
         condition: service_healthy
@@ -83,6 +87,12 @@ volumes:
   # ynoserver exposes sockets for each game in the sockets dir (<game>.sock).
   # This directory needs to be accessed by the reverse proxy.
   ynoserver-sockets:
+
+  # Saves for all games.
+  ynoserver-saves:
+
+  # Screenshots for all games.
+  ynoserver-screenshots:
 
   # ynorankings exposes a socket for the rankings server as rankings.sock.
   # This directory needs to be accessed by the reverse proxy.

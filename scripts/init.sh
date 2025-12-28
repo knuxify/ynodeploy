@@ -36,6 +36,16 @@ git apply c9fe47ec75c81218ff0ba0e5f0e17be9f434feee.patch
 rm c9fe47ec75c81218ff0ba0e5f0e17be9f434feee.patch
 cd ../..
 
+# Badge data path fixup
+echo "ynobadges: Applying fix for badge data path..."
+cd repos/ynobadges
+ln -s badges data
+cd ../..
+
+# Create dummy word filter (otherwise chat is broken)
+echo "ynoserver: Creating dummy word filter lists (filterwords.txt)..."
+touch repos/ynoserver/filterwords.txt
+
 # Generate key.bin (needed by ynoserver)
 echo "Generating key.bin for ynoserver..."
 echo -e "import os\nwith open('key.bin', 'wb+') as key: key.write(os.urandom(32))" | python3
