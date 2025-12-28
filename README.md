@@ -44,7 +44,13 @@ Prerequisites:
 To check the logs, run `docker compose logs`. To stop the container, run `docker compose down`.
 
 By default, the site will be accessible through http://yno.local, with the API
-exposed at http://connect.yno.local.
+exposed at http://connect.yno.local. You should add entries in your hosts file
+(`/etc/hosts` on Linux) to resolve to yno.local:
+
+```
+127.0.0.1 yno.local
+127.0.0.1 connect.yno.local
+```
 
 ## Maintenance
 
