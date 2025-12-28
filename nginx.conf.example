@@ -3,10 +3,6 @@
 #     server unix:/opt/server-sockets/CHANGEME.sock;
 # }
 
-upstream server_unconscious_socket {
-    server unix:/opt/server-sockets/unconscious.sock;
-}
-
 upstream rankings_socket {
     server unix:/opt/rankings-sockets/rankings.sock;
 }
@@ -24,7 +20,7 @@ server {
 	index index.html index.php;
 	root /opt/ynohome;
 
-	location /unconscious {
+	location /CHANGEME {
 		alias /opt/client;
 		try_files $uri $uri/ =404;
 
@@ -34,17 +30,17 @@ server {
             fastcgi_param SCRIPT_FILENAME $request_filename;
         }
 
-        location /unconscious/images/charsets/unconscious {
-			alias /opt/games/unconscious/CharSet;
+        location /CHANGEME/images/charsets/CHANGEME {
+			alias /opt/games/CHANGEME/CharSet;
 			try_files $uri $uri/ =404;
 		}
 
-		location ^~ /unconscious/locations/ {
+		location ^~ /CHANGEME/locations/ {
 			alias /opt/locations/;
 			try_files $uri $uri/ =404;
 		}
 
-		location ^~ /unconscious/lang/badge/ {
+		location ^~ /CHANGEME/lang/badge/ {
 			alias /opt/badges/lang/;
 			try_files $uri $uri/ =404;
 		}
@@ -94,8 +90,8 @@ server {
 		set $cors_origin $http_origin;
 	}
 
-	location /unconscious/ {
-		proxy_pass http://server_unconscious_socket/;
+	location /CHANGEME/ {
+		proxy_pass http://server_CHANGEME_socket/;
 
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto $scheme;
