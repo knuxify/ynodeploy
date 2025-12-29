@@ -8,7 +8,7 @@ reposdir="$basedir"/repos
 
 # Build dependencies
 cd "$reposdir"/easyrpg_buildscripts/emscripten
-#./0_build_everything.sh
+./0_build_everything.sh
 
 # Set build variables for liblcf and ynoengine
 export PATH="$PATH:$reposdir/easyrpg_buildscripts/emscripten/bin" # for icu-config
@@ -23,7 +23,7 @@ export EASYRPG_BUILDSCRIPTS="$reposdir/easyrpg_buildscripts"
 
 # Build liblcf
 cd "$reposdir"/liblcf
-if false; then
+
 emcmake cmake . -Bbuild -G Ninja --preset=emscripten-release \
 	-DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
 	-DCMAKE_C_FLAGS="$CFLAGS $CPPFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS $CPPFLAGS" \
@@ -36,7 +36,7 @@ emcmake cmake . -Bbuild -G Ninja --preset=emscripten-release \
 cmake --build build --target clean
 cmake --build build
 cmake --build build --target install
-fi
+
 # Build ynoengine
 cd "$reposdir"/ynoengine
 
