@@ -56,10 +56,6 @@ cd repos/ynobadges
 ln -s badges data
 cd ../..
 
-# Create dummy word filter (otherwise chat is broken)
-echo "ynoserver: Creating dummy word filter lists (filterwords.txt)..."
-printf "CHANGEME" > repos/ynoserver/filterwords.txt
-
 # Generate key.bin (needed by ynoserver)
 echo "Generating key.bin and key.txt..."
 python3 scripts/generate_key.py

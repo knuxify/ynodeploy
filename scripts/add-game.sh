@@ -110,6 +110,7 @@ dc_server = f"""  server-{game_name}:
     volumes:
       - ./logs:/opt/ynoserver/logs:rw
       - ./configs/{game_name}.yml:/opt/ynoserver/config.yml:ro
+      - ./configs/filterwords.txt:/opt/ynoserver/filterwords.txt:ro
       - ./repos/ynobadges:/opt/ynoserver/badges:ro
       - ./games/{game_name}:/opt/games/{game_name}:ro
       - ./key.bin:/opt/ynoserver/key.bin:ro
