@@ -98,8 +98,7 @@ On Ubuntu/Debian, you can set this up using the following commands:
    ```
    This will download all repositories, generate configs and apply fixups needed
    to get the site up and running. After running this script, relevant repositories
-   will be cloned under the `repos` subfolder (engine repositories are cloned under
-   `engine`).
+   will be cloned under the `repos` subfolder.
 3. For every game you want to run, run `scripts/add-game.sh`:
    ```console
    $ ./scripts/add-game.sh gamename path/to/game/files
