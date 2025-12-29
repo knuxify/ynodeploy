@@ -133,3 +133,7 @@ with open("docker-compose.yml", "w") as dc_file:
     dc_file.write(out)
 
 EOF
+
+echo "Creating config..."
+cp configs/server.yml.example configs/"$game_name".yml
+sed -i "s/CHANGEME/$game_name/g" configs/"$game_name".yml
