@@ -76,7 +76,7 @@ Prerequisites:
 
 On Ubuntu/Debian, you can set this up using the following commands:
 
-```sh-session
+```console
 # apt update
 # apt install python3 git docker docker-compose
 # adduser $(whoami) docker  # add current user to docker group to allow for
@@ -89,11 +89,11 @@ On Ubuntu/Debian, you can set this up using the following commands:
 ### Setup for development
 
 1. Clone the ynodeploy repository and open it:
-   ```sh-session
+   ```console
    $ git clone https://github.com/knuxify/ynodeploy; cd ynodeploy
    ```
 2. Run `scripts/init.sh`:
-   ```sh-session
+   ```console
    $ ./scripts/init.sh
    ```
    This will download all repositories, generate configs and apply fixups needed
@@ -101,14 +101,14 @@ On Ubuntu/Debian, you can set this up using the following commands:
    will be cloned under the `repos` subfolder (engine repositories are cloned under
    `engine`).
 3. For every game you want to run, run `scripts/add-game.sh`:
-   ```sh-session
+   ```console
    $ ./scripts/add-game.sh gamename path/to/game/files
    ```
    Replace `gamename` with the game's short name and `path/to/game/files` with
    the path to the extracted game (folder that contains RPG_RT.exe).
 4. Compile ynoengine using the build script in the `engine` folder
    (the build script will automatically copy the built files to `repos/forest-orb`):
-   ```sh-session
+   ```console
    $ engine/build.sh
    ```
 5. Run the container with `docker compose up -d`.
