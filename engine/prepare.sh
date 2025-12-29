@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -e "engine" ]; then
+if [ ! -d "engine" ]; then
 	echo "Please run this script from the base ynodeploy directory"
 	exit 1
 fi

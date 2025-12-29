@@ -71,7 +71,7 @@ cd engine
 cd ..
 
 echo "Setting key in engine..."
-sed -i "s/^const unsigned char psk\[\] \= .*/const unsigned char psk\[\] \= \{ $(cat key.txt) \};/" engine/ynoengine/src/multiplayer/yno_connection.cpp
+sed -i "s/^const unsigned char psk\[\] \= .*/const unsigned char psk\[\] \= \{ $(cat key.txt) \};/" repos/ynoengine/src/multiplayer/yno_connection.cpp
 
 # Copy example configs to target locations
 echo "Copying example configs to target locations..."
