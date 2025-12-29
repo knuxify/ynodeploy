@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Script for running gencache via Docker.
+
+basedir=$(readlink -f "$(dirname "$0")")
+# scripts/gencache/../../
+reposdir=$(readlink -f "$basedir"/../../repos)
+
+docker build -t easyrpg_gencache "$basedir"
+
+docker run --rm -v $(pwd):/src:rw -u $(id -u):$(id -g) easyrpg_gencache sh -c "cd /src && gencache $*"
+exit $?

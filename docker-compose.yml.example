@@ -20,27 +20,7 @@ services:
     networks:
       - backend
 
-  # ynoserver; each game needs its own server.
-  # Replace CHANGEME with the name of the game.
-  server-CHANGEME:
-    build:
-      context: ./repos/ynoserver
-      dockerfile: ../../docker/ynoserver/Dockerfile
-    restart: unless-stopped
-    volumes:
-      - ./logs:/opt/ynoserver/logs:rw
-      - ./configs/CHANGEME.yml:/opt/ynoserver/config.yml:ro
-      - ./repos/ynobadges:/opt/ynoserver/badges:ro
-      - ./games/CHANGEME:/opt/games/CHANGEME:ro
-      - ./key.bin:/opt/ynoserver/key.bin:ro
-      - ynoserver-sockets:/opt/ynoserver/sockets:rw
-      - ynoserver-saves:/opt/ynoserver/saves:rw
-      - ynoserver-screenshots:/opt/ynoserver/screenshots:rw
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - backend
+  # AUTOMATED: Use ./scripts/add-game.sh to add a new game.
 
   # ynorankings; one shared server for all games.
   rankings:

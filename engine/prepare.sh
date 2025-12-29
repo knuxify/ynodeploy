@@ -1,8 +1,10 @@
 #!/bin/sh
 
-git clone https://github.com/EasyRPG/buildscripts easyrpg_buildscripts
-git clone https://github.com/EasyRPG/liblcf
-git clone https://github.com/ynoproject/ynoengine
+if [ ! -e "engine" ]; then
+	echo "Please run this script from the base ynodeploy directory"
+	exit 1
+fi
 
-cd easyrpg_buildscripts
-git am ../buildscript-fixes.patch
+fixes_patch_path="$(pwd)"/engine/buildscript-fixes.patch
+cd repos/easyrpg_buildscripts
+git apply "$fixes_patch_path"

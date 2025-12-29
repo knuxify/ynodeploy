@@ -4,6 +4,7 @@ nginx.conf
 docker-compose.yml
 key.bin
 key.txt
+logs/
 
 games/*
 !games/README
