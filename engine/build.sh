@@ -3,7 +3,7 @@
 # Script to build minnaengine.
 # (Wrapper to do the build in Docker; for the actual build commands, see _build.sh.)
 
-if [ ! -e repos ]; then
+if [ ! -d repos ]; then
 	echo "Please run this script from the base ynodeploy directory"
 	exit 1
 fi
