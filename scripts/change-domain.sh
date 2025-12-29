@@ -3,7 +3,7 @@
 # change-domain.sh - change the target domain name for all files
 # usage: ./scripts/change-domain.sh old.domain new.domain (http/https)
 
-if [ ! -f repos ]; then
+if [ ! -d repos ]; then
 	echo "Please run this script from the base ynodeploy directory."
 	exit 1
 fi
