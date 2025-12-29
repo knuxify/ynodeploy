@@ -90,13 +90,10 @@ Prerequisites:
    ```
    Replace `gamename` with the game's short name and `path/to/game/files` with
    the path to the extracted game (folder that contains RPG_RT.exe).
-4. Compile ynoengine using the build script in the `engine` folder, and
-   copy the output into `repos/forest-orb` (the client's code):
+4. Compile ynoengine using the build script in the `engine` folder
+   (the build script will automatically copy the built files to `repos/forest-orb`):
    ```shell
-   $ cd engine
-   $ sudo ./build.sh
-   $ cp output/* ../repos/forest-orb
-   $ cd ../
+   $ engine/build.sh
    ```
 5. Run the container with `docker compose up -d`.
    * You may need to start the Docker service first.
