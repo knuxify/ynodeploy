@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -e scripts ]; then
+if [ ! -d scripts ]; then
 	echo "Please run this script from the base ynodeploy directory"
 	exit 1
 fi

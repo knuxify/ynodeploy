@@ -2,7 +2,7 @@
 
 # update-repos.sh - update all repositories
 
-if [ ! -e repos ]; then
+if [ ! -d repos ]; then
 	echo "Please run this script from the base ynodeploy directory."
 	exit 1
 fi
