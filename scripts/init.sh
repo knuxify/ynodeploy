@@ -30,7 +30,7 @@ fi
 
 if [ ! -d repos/liblcf ]; then
 	echo "Cloning EasyRPG/liblcf..."
-	git clone https://github.com/EasyRPG/Tools repos/liblcf
+	git clone https://github.com/EasyRPG/liblcf repos/liblcf
 fi
 
 # Apply buildscript patches
