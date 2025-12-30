@@ -1,0 +1,14 @@
+#!/bin/sh -e
+
+# Script for running convert.sh via Docker.
+
+if [ ! -d scripts ]; then
+	echo "Please run this script from the base ynodeploy directory"
+	exit 1
+fi
+
+basedir=$(readlink -f "$(dirname "$0")")
+
+docker build -t audioconvert "$basedir"
+docker run --rm -v $(pwd):/src:rw -u $(id -u):$(id -g) audioconvert sh -c "cd /src && /src/scripts/audioconvert/convert.sh $*"
+exit $?
