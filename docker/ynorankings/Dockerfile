@@ -16,10 +16,6 @@ FROM alpine:3.23
 WORKDIR /opt/ynorankings
 COPY --from=build /opt/ynorankings/ynorankings /opt/ynorankings/ynorankings
 
-# Let yno user write to the sockets directory
-RUN mkdir -p sockets && \
-    chown -R 10001:10001 sockets
-
 # Add yno user
 ARG UID=10001
 ARG GID=10001
@@ -27,6 +23,10 @@ RUN apk add shadow
 RUN groupadd -g "${GID}" yno
 RUN useradd -m -u ${UID} -g yno yno
 RUN apk del shadow
+
+# Let yno user write to the sockets directory
+RUN mkdir -p sockets && \
+    chown -R 10001:10001 sockets
 
 # Run ynorankings
 USER yno
