@@ -36,5 +36,5 @@ echo "Converting audio files to opus..."
 
 echo "Running gencache..."
 
-"$(dirname $0)"/gencache/gencache "$target_path" --output "$target_path"/index.json
+"$(dirname $0)"/gencache/gencache "$target_path"
 
