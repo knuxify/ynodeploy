@@ -2,11 +2,21 @@
 
 # Script for running gencache via Docker.
 
-basedir=$(readlink -f "$(dirname "$0")")
-# scripts/gencache/../../
-reposdir=$(readlink -f "$basedir"/../../repos)
+if [ ! "$*" ]; then
+	echo "usage: $0 <path>"
+	echo "Run the gencache tool from EasyRPG to generate index.json."
+	exit 1
+fi
 
-docker build -t easyrpg_gencache "$basedir"
+script_basedir=$(readlink -f "$(dirname "$0")")
+if [ -d "$*" ]; then
+	target_basedir=$(readlink -f "$*")
+else
+	target_basedir=$(readlink -f "$(dirname "$*")")
+fi
 
-docker run --rm -v $(pwd):/src:rw -u $(id -u):$(id -g) easyrpg_gencache sh -c "cd /src && gencache $*"
+# Build container
+docker build -t easyrpg_gencache "$script_basedir"
+# Run the command
+docker run --rm -v "$target_basedir":/target:rw -u $(id -u):$(id -g) easyrpg_gencache sh -c "cd /target && /easyrpg/bin/gencache"
 exit $?

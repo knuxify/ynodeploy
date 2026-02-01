@@ -2,13 +2,21 @@
 
 # Script for running convert.sh via Docker.
 
-if [ ! -d scripts ]; then
-	echo "Please run this script from the base ynodeploy directory"
+if [ ! "$*" ]; then
+	echo "usage: $0 <path>"
+	echo "Recursively converts all audio files under the given path to .ogg."
 	exit 1
 fi
 
-basedir=$(readlink -f "$(dirname "$0")")
+script_basedir=$(readlink -f "$(dirname "$0")")
+if [ -d "$*" ]; then
+	target_basedir=$(readlink -f "$*")
+else
+	target_basedir=$(readlink -f "$(dirname "$*")")
+fi
 
-docker build -t audioconvert "$basedir"
-docker run --rm -v $(pwd):/src:rw -u $(id -u):$(id -g) audioconvert sh -c "cd /src && /src/scripts/audioconvert/convert.sh $*"
+# Build container
+docker build -t audioconvert "$script_basedir"
+# Run the command
+docker run --rm -v "$target_basedir":/target:rw -u $(id -u):$(id -g) audioconvert "/target"
 exit $?

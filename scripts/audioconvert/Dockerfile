@@ -5,3 +5,6 @@ RUN apk add --no-cache ffmpeg fluidsynth curl
 
 # Get MSGS soundfont for fluidsynth
 RUN mkdir /opt/sf && curl -o /opt/sf/MSGS_Fixed.sf2 https://defensemech.com/MSGS_Fixed.sf2
+
+COPY convert.sh /bin/convert.sh
+ENTRYPOINT [ "/bin/convert.sh" ]
