@@ -26,11 +26,11 @@ new_domain_escaped=$(echo $new_domain | sed 's/\./\\./g')
 
 expressions="-e s/$old_domain_escaped/$new_domain_escaped/g"
 
-if [ "$secure" == "https" ]; then
+if [ "$secure" = "https" ]; then
 	expressions="$expressions -e s/http\:\/\/$new_domain_escaped/https\:\/\/$new_domain_escaped/g"
 	expressions="$expressions -e s/http\:\/\/connect\.$new_domain_escaped/https\:\/\/connect\.$new_domain_escaped/g"
 	expressions="$expressions -e s/ws\:\/\/connect\.$new_domain_escaped/wss\:\/\/connect\.$new_domain_escaped/g"
-elif [ "$secure" == "http" ]; then
+elif [ "$secure" = "http" ]; then
 	expressions="$expressions -e s/https\:\/\/$new_domain_escaped/http\:\/\/$new_domain_escaped/g"
 	expressions="$expressions -e s/https\:\/\/connect\.$new_domain_escaped/http\:\/\/connect\.$new_domain_escaped/g"
 	expressions="$expressions -e s/wss\:\/\/connect\.$new_domain_escaped/ws\:\/\/connect\.$new_domain_escaped/g"

@@ -7,7 +7,7 @@ fi
 
 # Check if dependencies are present
 for dep in git docker python3; do
-	if not which "$dep" &>/dev/null; then
+	if ! [ $(which "$dep") ]; then
 		echo "$dep is not installed! Please get it from your distribution's package manager."
 		exit 1
 	fi
