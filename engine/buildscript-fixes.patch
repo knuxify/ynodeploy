@@ -1,55 +1,89 @@
-From 7e6eeff85fdc5da9294c93d735bf87ce84f6ddfa Mon Sep 17 00:00:00 2001
+From c9d5d20bde1efd443601583da503a2dbfca3f3ef Mon Sep 17 00:00:00 2001
 From: knuxify <knuxify@gmail.com>
-Date: Sat, 27 Dec 2025 18:49:19 +0100
+Date: Sun, 22 Mar 2026 16:52:27 +0100
 Subject: [PATCH] buildscript fixes
 
 ---
- emscripten/2_build_toolchain.sh |   4 ++--
- shared/common.sh                |  11 ++++++++---
+ emscripten/2_build_toolchain.sh |  23 ++++++++++++++---------
+ shared/common.sh                |  12 +++++++++---
  shared/packages.ini             |   2 +-
- shared/packages.sh              | Bin 4960 -> 4978 bytes
- 4 files changed, 11 insertions(+), 6 deletions(-)
+ shared/packages.sh              | Bin 5521 -> 5539 bytes
+ 4 files changed, 24 insertions(+), 13 deletions(-)
 
 diff --git a/emscripten/2_build_toolchain.sh b/emscripten/2_build_toolchain.sh
-index 6fca1a5..9fa31c1 100755
+index 755a796..88119b5 100755
 --- a/emscripten/2_build_toolchain.sh
 +++ b/emscripten/2_build_toolchain.sh
-@@ -111,7 +111,7 @@ install_lib $SPEEXDSP_DIR $SPEEXDSP_ARGS
+@@ -59,7 +59,7 @@ export MAKEFLAGS="-j${nproc:-2}"
+ 
+ function set_build_flags {
+ 	export PATH="$PATH:$PLATFORM_PREFIX/bin" # for icu-config
+-	export CFLAGS="-O2 -g0 -sUSE_SDL=0 $CFLAGS_SIMD"
++	export CFLAGS="-O2 -g0 -sUSE_SDL=0 -I$PLATFORM_PREFIX/include $CFLAGS_SIMD"
+ 	export CXXFLAGS="$CFLAGS"
+ 	export CPPFLAGS="-I$PLATFORM_PREFIX/include"
+ 	export LDFLAGS="-L$PLATFORM_PREFIX/lib -sEXPORT_ALL=1"
+@@ -72,6 +72,11 @@ function set_build_flags {
+ 	export ac_cv_func_mmap_fixed_mapped=yes
+ 
+ 	emconfigure $SCRIPT_DIR/../shared/mk-meson-cross.sh asmjs > meson-cross.txt
++
++	# What zlib versions are available on the host?
++find /usr -name "zlib.h" 2>/dev/null | xargs grep -l "ZLIB_VERSION" | xargs grep "ZLIB_VERSION " || true
++# vs your target zlib
++grep "ZLIB_VERSION " /src/repos/easyrpg_buildscripts/emscripten/include/zlib.h || true
+ }
+ 
+ install_lib_icu_native
+@@ -96,23 +101,23 @@ if [ $os = "Darwin" ] ; then
+ fi
+ 
+ install_lib_cmake $ZLIB_DIR $ZLIB_ARGS
+-install_lib_cmake $LIBPNG_DIR $LIBPNG_ARGS
++install_lib $LIBPNG_DIR --disable-tests --disable-tools --enable-shared
+ install_lib_cmake $FREETYPE_DIR $FREETYPE_ARGS -DFT_DISABLE_HARFBUZZ=ON
+ install_lib_meson $HARFBUZZ_DIR $HARFBUZZ_ARGS
+ install_lib_cmake $FREETYPE_DIR $FREETYPE_ARGS -DFT_DISABLE_HARFBUZZ=OFF -DCMAKE_FIND_ROOT_PATH=$PLATFORM_PREFIX
+ install_lib_meson $PIXMAN_DIR $PIXMAN_ARGS $PIXMAN_EXTRA_ARGS
+ install_lib_cmake $EXPAT_DIR $EXPAT_ARGS
+-install_lib $LIBOGG_DIR $LIBOGG_ARGS
+-install_lib $LIBVORBIS_DIR $LIBVORBIS_ARGS
+-install_lib $MPG123_DIR $MPG123_ARGS
+-install_lib $LIBSNDFILE_DIR $LIBSNDFILE_ARGS
+-install_lib_cmake $LIBXMP_LITE_DIR $LIBXMP_LITE_ARGS
++#install_lib $LIBOGG_DIR $LIBOGG_ARGS
++#install_lib $LIBVORBIS_DIR $LIBVORBIS_ARGS
++#install_lib $MPG123_DIR $MPG123_ARGS
++#install_lib $LIBSNDFILE_DIR $LIBSNDFILE_ARGS
++#install_lib_cmake $LIBXMP_LITE_DIR $LIBXMP_LITE_ARGS
+ install_lib $SPEEXDSP_DIR $SPEEXDSP_ARGS
  #install_lib_cmake $WILDMIDI_DIR $WILDMIDI_ARGS
  install_lib_cmake $OPUS_DIR $OPUS_ARGS -DOPUS_STACK_PROTECTOR=OFF
  install_lib $OPUSFILE_DIR $OPUSFILE_ARGS
--install_lib_cmake $FLUIDSYNTH_DIR $FLUIDSYNTH_ARGS
-+#install_lib_cmake $FLUIDSYNTH_DIR $FLUIDSYNTH_ARGS
- install_lib_cmake $NLOHMANNJSON_DIR $NLOHMANNJSON_ARGS
+-install_lib_cmake $FLUIDSYNTH_DIR $FLUIDSYNTH_ARGS -Dosal=embedded
+-install_lib_cmake $NLOHMANNJSON_DIR $NLOHMANNJSON_ARGS
++#install_lib_cmake $FLUIDSYNTH_DIR $FLUIDSYNTH_ARGS -Dosal=embedded
++install_lib_cmake $NLOHMANNJSON_DIR $NLOHMANNJSON_ARGS -DJSON_Install=ON
  install_lib_meson $INIH_DIR $INIH_ARGS
  #install_lib $LHASA_DIR $LHASA_ARGS
-@@ -127,4 +127,4 @@ unset TARGET_HOST
- install_lib_icu_cross
- icu_force_data_install
- 
--install_lib_liblcf
-+#install_lib_liblcf
+ install_lib_cmake $FMT_DIR $FMT_ARGS
 diff --git a/shared/common.sh b/shared/common.sh
-index f32865f..37355be 100644
+index 4621b87..a4c57a8 100644
 --- a/shared/common.sh
 +++ b/shared/common.sh
-@@ -21,6 +21,11 @@ function download {
- 
- 	file=${url##*/}
- 
-+	if [ -e "$file" ]; then
-+		msg "Already downloaded, skipping."
-+		return
-+	fi
-+
- 	# Try cache folder first
- 	if [ "x$EASYRPG_PATH_DOWNLOADCACHE" != "x" ]; then
- 		if [ -e $EASYRPG_PATH_DOWNLOADCACHE/$file ]; then
-@@ -230,9 +235,9 @@ function install_lib_meson {
- 		shift
+@@ -212,7 +212,7 @@ function install_lib_cmake {
+ 			-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+ 			-DCMAKE_PREFIX_PATH=$PLATFORM_PREFIX $CMAKE_EXTRA_ARGS $@
+ 		cmake --build build --target clean
+-		cmake --build build
++		cmake --build build -- VERBOSE=1
+ 		cmake --build build --target install
+ 	)
+ }
+@@ -231,8 +231,9 @@ function install_lib_meson {
  
  		rm -rf build
--
+ 
 -		$MESON_WRAPPER meson setup build --prefix $PLATFORM_PREFIX --buildtype=plain \
 -			-Ddefault_library=static --libdir=lib $MESON_CROSS $@
 +		export PKG_CONFIG=$(which pkg-config)
@@ -58,11 +92,23 @@ index f32865f..37355be 100644
  		meson compile -C build
  		meson install -C build
  	)
+@@ -286,6 +287,11 @@ function install_lib_icu_cross {
+ 
+ 	ICU_CROSS_BUILD=$PWD/icu-native
+ 
++    rm -rf $PLATFORM_PREFIX/include/unicode
++    rm -rf $PLATFORM_PREFIX/include/layout
++    rm -f $PLATFORM_PREFIX/lib/libicu*.a
++    rm -f $PLATFORM_PREFIX/lib/pkgconfig/icu*.pc
++
+ 	ccachify_compiler
+ 
+ 	mkdir -p icu-cross
 diff --git a/shared/packages.ini b/shared/packages.ini
-index 0c91a1d..0c7468c 100644
+index d7c0ce2..9fefe3e 100644
 --- a/shared/packages.ini
 +++ b/shared/packages.ini
-@@ -122,7 +122,7 @@ arguments = "-DFLUIDLITE_BUILD_STATIC=ON -DFLUIDLITE_BUILD_SHARED=OFF"
+@@ -125,7 +125,7 @@ arguments = "-DFLUIDLITE_BUILD_STATIC=ON -DFLUIDLITE_BUILD_SHARED=OFF"
  version = 3.12.0
  url = "https://github.com/nlohmann/json/archive/v${version}.tar.gz"
  directory = "json-${version}"
@@ -72,14 +118,14 @@ index 0c91a1d..0c7468c 100644
  
  [fmt]
 diff --git a/shared/packages.sh b/shared/packages.sh
-index 0aff40b587e4764f5f9ce809ba379e950848da20..25ab156a0403468372aea97d141219c02d11687b 100644
+index 681d963c4c84ab7e4e588fd58f495182f0819f14..c0e807caa4d43654f1101a8dd4a6f761e1501649 100644
 GIT binary patch
 delta 31
-mcmaE$_DO96KfjQIu8UW&zhAs(UU5lcPL8d=-)4UPKo$V2r3wH5
+mcmbQJy;ysLm7tJ<u8UW&zhAs(UU5lcPL8d=-)1Ypa25cckqOKI
 
 delta 12
-TcmeyQ_CRd|KmTS${y-K0A~ggh
+TcmZ3iJyCmumEdL{!EhD;9mWIk
 
 -- 
-2.52.0
+2.53.0
 
