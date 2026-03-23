@@ -1,18 +1,25 @@
 {
-  "featureFilter": {
-    "filterType": "feature",
-    "excludelist": [
-      "currency_data",
-      "unit_data",
-      "region_data",
-      "zone_data"
-    ]
+  "strategy": "additive",
+  "featureFilters": {
+    "conversion": {
+      "filterType": "include",
+      "list": [
+        "iso-8859-1",
+        "windows-1252",
+        "shift_jis",
+        "windows-31j",
+        "ibm-942",
+        "ibm-943"
+      ]
+    },
+    "normalization": "include"
   },
   "localeFilter": {
-    "filterType": "language",
-    "includelist": [
-      "en", "de", "fr", "es", "it", "pt", "nl", "pl", "cs", "sk",
-      "hu", "ro", "sv", "da", "fi", "nb", "ja", "ko", "zh"
+    "filterType": "include",
+    "list": [
+      "root",
+      "en",
+      "ja"
     ]
   }
 }
