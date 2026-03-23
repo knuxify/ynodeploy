@@ -1,17 +1,7 @@
 {
   "strategy": "additive",
   "featureFilters": {
-    "conversion": {
-      "filterType": "include",
-      "list": [
-        "iso-8859-1",
-        "windows-1252",
-        "shift_jis",
-        "windows-31j",
-        "ibm-942",
-        "ibm-943"
-      ]
-    },
+    "conversion": "include",
     "normalization": "include"
   },
   "localeFilter": {
