@@ -2,7 +2,7 @@
 
 FROM emscripten/emsdk:3.1.74
 
-RUN apt update && apt install -y ca-certificates gpg wget ninja-build automake autoconf autotools-dev m4 pkg-config python3 python3-pip
+RUN apt update && apt install -y ca-certificates gpg wget ninja-build automake autoconf autotools-dev libtool m4 pkg-config python3 python3-pip
 
 # Get meson from pip (some projects need a newer version of meson than what Ubuntu has)
 RUN pip3 install --no-cache-dir meson

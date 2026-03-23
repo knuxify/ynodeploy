@@ -1,20 +1,99 @@
-From c9d5d20bde1efd443601583da503a2dbfca3f3ef Mon Sep 17 00:00:00 2001
+From d1908d91256f7a3daf70684a80beebde17141890 Mon Sep 17 00:00:00 2001
 From: knuxify <knuxify@gmail.com>
 Date: Sun, 22 Mar 2026 16:52:27 +0100
 Subject: [PATCH] buildscript fixes
 
 ---
- emscripten/2_build_toolchain.sh |  23 ++++++++++++++---------
- shared/common.sh                |  12 +++++++++---
- shared/packages.ini             |   2 +-
- shared/packages.sh              | Bin 5521 -> 5539 bytes
- 4 files changed, 24 insertions(+), 13 deletions(-)
+ emscripten/1_download_library.sh |  31 ++-----------------------------
+ emscripten/2_build_toolchain.sh  |  26 ++++++++++++--------------
+ emscripten/icu_filter.json       |  18 ++++++++++++++++++
+ shared/common.sh                 |  26 +++++++++++++++++++-------
+ shared/packages.ini              |   8 +++-----
+ shared/packages.sh               | Bin 5521 -> 5532 bytes
+ 6 files changed, 54 insertions(+), 55 deletions(-)
+ create mode 100644 emscripten/icu_filter.json
 
+diff --git a/emscripten/1_download_library.sh b/emscripten/1_download_library.sh
+index 78458f7..8d2b7cd 100755
+--- a/emscripten/1_download_library.sh
++++ b/emscripten/1_download_library.sh
+@@ -82,30 +82,10 @@ download_and_extract $EXPAT_URL
+ rm -rf $LIBOGG_DIR
+ download_and_extract $LIBOGG_URL
+ 
+-# libvorbis
+-rm -rf $LIBVORBIS_DIR
+-download_and_extract $LIBVORBIS_URL
+-
+-# mpg123
+-rm -rf $MPG123_DIR
+-download_and_extract $MPG123_URL
+-
+-# libsndfile
+-rm -rf $LIBSNDFILE_DIR
+-download_and_extract $LIBSNDFILE_URL
+-
+-# libxmp-lite
+-rm -rf $LIBXMP_LITE_DIR
+-download_and_extract $LIBXMP_LITE_URL
+-
+ # speexdsp
+ rm -rf $SPEEXDSP_DIR
+ download_and_extract $SPEEXDSP_URL
+ 
+-# wildmidi
+-#rm -rf $WILDMIDI_DIR
+-#download_and_extract $WILDMIDI_URL
+-
+ # opus
+ rm -rf $OPUS_DIR
+ download_and_extract $OPUS_URL
+@@ -114,10 +94,6 @@ download_and_extract $OPUS_URL
+ rm -rf $OPUSFILE_DIR
+ download_and_extract $OPUSFILE_URL
+ 
+-# FluidSynth
+-rm -rf $FLUIDSYNTH_DIR
+-download_and_extract $FLUIDSYNTH_URL
+-
+ # nlohmann-json
+ rm -rf $NLOHMANNJSON_DIR
+ download_and_extract $NLOHMANNJSON_URL
+@@ -138,14 +114,11 @@ download_and_extract $FMT_URL
+ rm -rf $ICU_DIR
+ download_and_extract $ICU_URL
+ 
+-# icudata
+-rm -f $ICUDATA_FILES
++## icudata
++rm -rf $ICUDATA_DIR
+ download_and_extract $ICUDATA_URL
+ 
+ # SDL2
+ rm -rf $SDL2_DIR
+ download_and_extract $SDL2_URL
+ 
+-# liblcf
+-rm -rf liblcf
+-download_liblcf
 diff --git a/emscripten/2_build_toolchain.sh b/emscripten/2_build_toolchain.sh
-index 755a796..88119b5 100755
+index 755a796..e3875e7 100755
 --- a/emscripten/2_build_toolchain.sh
 +++ b/emscripten/2_build_toolchain.sh
-@@ -59,7 +59,7 @@ export MAKEFLAGS="-j${nproc:-2}"
+@@ -23,12 +23,6 @@ if [ ! -f .patches-applied ]; then
+ 
+ 	patches_common
+ 
+-	# Fix libsndfile
+-	(cd $LIBSNDFILE_DIR
+-		patch -Np1 < $SCRIPT_DIR/../shared/extra/libsndfile.patch
+-		autoreconf -fi
+-	)
+-
+ 	# disable unsupported compiler flags by emcc clang in libogg
+ 	perl -pi -e 's/-O20/-g0 -O2/g' $LIBOGG_DIR/configure
+ 
+@@ -59,7 +53,7 @@ export MAKEFLAGS="-j${nproc:-2}"
  
  function set_build_flags {
  	export PATH="$PATH:$PLATFORM_PREFIX/bin" # for icu-config
@@ -23,19 +102,18 @@ index 755a796..88119b5 100755
  	export CXXFLAGS="$CFLAGS"
  	export CPPFLAGS="-I$PLATFORM_PREFIX/include"
  	export LDFLAGS="-L$PLATFORM_PREFIX/lib -sEXPORT_ALL=1"
-@@ -72,6 +72,11 @@ function set_build_flags {
- 	export ac_cv_func_mmap_fixed_mapped=yes
- 
+@@ -74,6 +68,10 @@ function set_build_flags {
  	emconfigure $SCRIPT_DIR/../shared/mk-meson-cross.sh asmjs > meson-cross.txt
-+
-+	# What zlib versions are available on the host?
-+find /usr -name "zlib.h" 2>/dev/null | xargs grep -l "ZLIB_VERSION" | xargs grep "ZLIB_VERSION " || true
-+# vs your target zlib
-+grep "ZLIB_VERSION " /src/repos/easyrpg_buildscripts/emscripten/include/zlib.h || true
  }
  
++# use icu language filter to avoid huge ICU data files
++export ICU_ARGS="$ICU_ARGS --with-data-filter-file=$PLATFORM_PREFIX/icu_filter.json"
++export ICU_DATA_FILTER_FILE="$PLATFORM_PREFIX/icu_filter.json"
++
  install_lib_icu_native
-@@ -96,23 +101,23 @@ if [ $os = "Darwin" ] ; then
+ 
+ echo "Preparing toolchain"
+@@ -96,23 +94,23 @@ if [ $os = "Darwin" ] ; then
  fi
  
  install_lib_cmake $ZLIB_DIR $ZLIB_ARGS
@@ -46,12 +124,11 @@ index 755a796..88119b5 100755
  install_lib_cmake $FREETYPE_DIR $FREETYPE_ARGS -DFT_DISABLE_HARFBUZZ=OFF -DCMAKE_FIND_ROOT_PATH=$PLATFORM_PREFIX
  install_lib_meson $PIXMAN_DIR $PIXMAN_ARGS $PIXMAN_EXTRA_ARGS
  install_lib_cmake $EXPAT_DIR $EXPAT_ARGS
--install_lib $LIBOGG_DIR $LIBOGG_ARGS
+ install_lib $LIBOGG_DIR $LIBOGG_ARGS
 -install_lib $LIBVORBIS_DIR $LIBVORBIS_ARGS
 -install_lib $MPG123_DIR $MPG123_ARGS
 -install_lib $LIBSNDFILE_DIR $LIBSNDFILE_ARGS
 -install_lib_cmake $LIBXMP_LITE_DIR $LIBXMP_LITE_ARGS
-+#install_lib $LIBOGG_DIR $LIBOGG_ARGS
 +#install_lib $LIBVORBIS_DIR $LIBVORBIS_ARGS
 +#install_lib $MPG123_DIR $MPG123_ARGS
 +#install_lib $LIBSNDFILE_DIR $LIBSNDFILE_ARGS
@@ -67,11 +144,55 @@ index 755a796..88119b5 100755
  install_lib_meson $INIH_DIR $INIH_ARGS
  #install_lib $LHASA_DIR $LHASA_ARGS
  install_lib_cmake $FMT_DIR $FMT_ARGS
+diff --git a/emscripten/icu_filter.json b/emscripten/icu_filter.json
+new file mode 100644
+index 0000000..7d1b928
+--- /dev/null
++++ b/emscripten/icu_filter.json
+@@ -0,0 +1,18 @@
++{
++  "featureFilter": {
++    "filterType": "feature",
++    "excludelist": [
++      "currency_data",
++      "unit_data",
++      "region_data",
++      "zone_data"
++    ]
++  },
++  "localeFilter": {
++    "filterType": "language",
++    "includelist": [
++      "en", "de", "fr", "es", "it", "pt", "nl", "pl", "cs", "sk",
++      "hu", "ro", "sv", "da", "fi", "nb", "ja", "ko", "zh"
++    ]
++  }
++}
 diff --git a/shared/common.sh b/shared/common.sh
-index 4621b87..a4c57a8 100644
+index 4621b87..9833429 100644
 --- a/shared/common.sh
 +++ b/shared/common.sh
-@@ -212,7 +212,7 @@ function install_lib_cmake {
+@@ -21,6 +21,11 @@ function download {
+ 
+ 	file=${url##*/}
+ 
++	if [ -e "$file" ]; then
++		echo "[file already downloaded]"
++		return
++	fi
++
+ 	# Try cache folder first
+ 	if [ "x$EASYRPG_PATH_DOWNLOADCACHE" != "x" ]; then
+ 		if [ -e $EASYRPG_PATH_DOWNLOADCACHE/$file ]; then
+@@ -205,14 +210,14 @@ function install_lib_cmake {
+ 			CMAKE_RANLIB="-DCMAKE_RANLIB=$RANLIB"
+ 		fi
+ 
+-		$CMAKE_WRAPPER cmake . -Bbuild -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_SHARED_LIBS=OFF \
++		$CMAKE_WRAPPER cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+ 			-DCMAKE_C_FLAGS="$CFLAGS $CPPFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS $CPPFLAGS" \
+ 			-DCMAKE_INSTALL_LIBDIR=lib $CMAKE_AR $CMAKE_NM $CMAKE_RANLIB $CMAKE_CCACHE \
+ 			-DCMAKE_INSTALL_PREFIX=$PLATFORM_PREFIX -DCMAKE_SYSTEM_NAME=$CMAKE_SYSTEM_NAME \
  			-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
  			-DCMAKE_PREFIX_PATH=$PLATFORM_PREFIX $CMAKE_EXTRA_ARGS $@
  		cmake --build build --target clean
@@ -80,7 +201,7 @@ index 4621b87..a4c57a8 100644
  		cmake --build build --target install
  	)
  }
-@@ -231,8 +231,9 @@ function install_lib_meson {
+@@ -231,8 +236,9 @@ function install_lib_meson {
  
  		rm -rf build
  
@@ -92,7 +213,18 @@ index 4621b87..a4c57a8 100644
  		meson compile -C build
  		meson install -C build
  	)
-@@ -286,6 +287,11 @@ function install_lib_icu_cross {
+@@ -255,6 +261,10 @@ function install_lib_icu_native {
+ 	unset CXXFLAGS
+ 	unset LDFLAGS
+ 
++	# Move ICU data to source tree
++	rm -r icu/source/data
++	mv data icu/source/data
++
+ 	# ICU's configure will always check clang and then gcc first. Since they
+ 	# are used on many of our platforms, we can accelerate with ccache
+ 	if test_tool clang && test_tool clang++; then
+@@ -286,6 +296,11 @@ function install_lib_icu_cross {
  
  	ICU_CROSS_BUILD=$PWD/icu-native
  
@@ -104,8 +236,23 @@ index 4621b87..a4c57a8 100644
  	ccachify_compiler
  
  	mkdir -p icu-cross
+@@ -390,7 +405,6 @@ function patches_common {
+ 	fi
+ 
+ 	verbosemsg "ICU"
+-	cp icudt*.dat $ICU_DIR/source/data/in
+ 	(cd $ICU_DIR/source
+ 		chmod u+x configure
+ 		cp config/mh-linux config/mh-unknown
+@@ -407,6 +421,4 @@ function cleanup {
+ 	SDL2-*/ SDL2_image-*/ fmt-*/ FluidLite-*/ fluidsynth-*/ json-*/ inih-*/ \
+ 	lhasa-*/ freeimage-* liblcf/
+ 	rm -f *.zip *.bz2 *.gz *.xz *.tgz icudt* .patches-applied config.cache meson-cross.txt
+-	rm -rf sbin/ share/
+-	rm -f lib/*.la
+ }
 diff --git a/shared/packages.ini b/shared/packages.ini
-index d7c0ce2..9fefe3e 100644
+index d7c0ce2..4d5a80d 100644
 --- a/shared/packages.ini
 +++ b/shared/packages.ini
 @@ -125,7 +125,7 @@ arguments = "-DFLUIDLITE_BUILD_STATIC=ON -DFLUIDLITE_BUILD_SHARED=OFF"
@@ -117,14 +264,30 @@ index d7c0ce2..9fefe3e 100644
  anitya_id = 11152
  
  [fmt]
+@@ -159,10 +159,8 @@ anitya_id = 379847
+ version_major = 78
+ version_minor = 2
+ version = ${version_major}.${version_minor}
+-_ini_comment = empty on purpose, otherwise polluted by default section
+-directory = 
+-url = https://ci.easyrpg.org/job/icudata/lastSuccessfulBuild/artifact/icudata${version_major}_all.tar.gz
+-files = "icudt*.dat"
++directory = data
++url = "https://github.com/unicode-org/icu/releases/download/release-${version}/icu4c-${version}-data.zip"
+ anitya_id = 379847
+ 
+ [SDL2]
 diff --git a/shared/packages.sh b/shared/packages.sh
-index 681d963c4c84ab7e4e588fd58f495182f0819f14..c0e807caa4d43654f1101a8dd4a6f761e1501649 100644
+index 681d963c4c84ab7e4e588fd58f495182f0819f14..0b8a815e47fc070b106e52ca5c402e48e4a0b926 100644
 GIT binary patch
-delta 31
-mcmbQJy;ysLm7tJ<u8UW&zhAs(UU5lcPL8d=-)1Ypa25cckqOKI
+delta 70
+zcmbQJJx6<km7tJ<u8UW&zhAs(UU5lcPL8d=-)1YpWlRDto<X)Li6x0#p3b2zjv<bd
+Y9RwvOZx^!S014_<Wfp7>60v6l01s9b>;M1&
 
-delta 12
-TcmZ3iJyCmumEdL{!EhD;9mWIk
+delta 145
+zcmbQEJyCmumEdL{!DUSKp+P>j86_nJ#a8<I$(eeoiN%#g1?hVEMd|uk`APbj$)zcY
+zC5ieuiNz(srOC;u#l>l*IZmaSIVt*yMJ1VOiOD4}MdlXqi8(oXC5c6P=~Y~w&Y>=j
+mA&&8Go<6R@wn`v_O0@KVhADAz1-tkd#e-~C+MFd~#0UWPjWN{#
 
 -- 
 2.53.0

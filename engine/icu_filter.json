@@ -1,0 +1,18 @@
+{
+  "featureFilter": {
+    "filterType": "feature",
+    "excludelist": [
+      "currency_data",
+      "unit_data",
+      "region_data",
+      "zone_data"
+    ]
+  },
+  "localeFilter": {
+    "filterType": "language",
+    "includelist": [
+      "en", "de", "fr", "es", "it", "pt", "nl", "pl", "cs", "sk",
+      "hu", "ro", "sv", "da", "fi", "nb", "ja", "ko", "zh"
+    ]
+  }
+}
