@@ -45,12 +45,12 @@ nginx_client = """	location /{game_name} {
 			try_files \$uri \$uri/ =404;
 		}
 
-		location ^~ /{game_name}/locations/ {
+		location /{game_name}/locations/ {
 			alias /opt/locations/;
 			try_files \$uri \$uri/ =404;
 		}
 
-		location ^~ /{game_name}/lang/badge/ {
+		location /{game_name}/lang/badge/ {
 			alias /opt/badges/lang/;
 			try_files \$uri \$uri/ =404;
 		}
