@@ -15,8 +15,15 @@ else
 	target_basedir=$(readlink -f "$(dirname "$*")")
 fi
 
+# Check if we can run docker as regular user
+if docker ps &>/dev/null; then
+	_DOCKER_PREFIX=""
+else
+	_DOCKER_PREFIX=sudo
+fi
+
 # Build container
-docker build -t audioconvert "$script_basedir"
+$_DOCKER_PREFIX docker build -t audioconvert "$script_basedir"
 # Run the command
-docker run --rm -v "$target_basedir":/target:rw -u $(id -u):$(id -g) audioconvert "/target"
+$_DOCKER_PREFIX docker run --rm -v "$target_basedir":/target:rw -u $(id -u):$(id -g) audioconvert "/target"
 exit $?
