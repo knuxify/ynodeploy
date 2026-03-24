@@ -19,8 +19,14 @@ shift
 game_path="$@"
 target_path=games/"$game_name"
 
+echo "Converting audio files to opus..."
+"$(dirname $0)"/audioconvert/audioconvert "$game_path"
+
+echo "Running gencache..."
+"$(dirname $0)"/gencache/gencache "$game_path"
+
 if [ $(realpath $target_path) != $(realpath $game_path) ]; then
-    echo "Copying game files to games directory..."
+    echo "Moving game files to games directory..."
     [ ! -d games ] && mkdir games
     if [ -d "$target_path" ]; then
         echo "Game with shortcode $game_name already exists!"
@@ -28,13 +34,5 @@ if [ $(realpath $target_path) != $(realpath $game_path) ]; then
         read -n1 _tmp
         rm -r "$target_path"
     fi
-    cp -r "$game_path" "$target_path"
+    mv "$game_path" "$target_path"
 fi
-
-echo "Converting audio files to opus..."
-"$(dirname $0)"/audioconvert/audioconvert "$target_path"
-
-echo "Running gencache..."
-
-"$(dirname $0)"/gencache/gencache "$target_path"
-
