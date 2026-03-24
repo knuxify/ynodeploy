@@ -1,15 +1,8 @@
 {
   "strategy": "additive",
   "featureFilters": {
-    "conversion": "include",
-    "normalization": "include"
-  },
-  "localeFilter": {
-    "filterType": "include",
-    "list": [
-      "root",
-      "en",
-      "ja"
-    ]
+    "conversion_mappings": "include",
+    "normalization": "include",
+	"cnvalias": "include"
   }
 }

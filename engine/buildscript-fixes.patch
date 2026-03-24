@@ -6,12 +6,10 @@ Subject: [PATCH] buildscript fixes
 ---
  emscripten/1_download_library.sh |  31 ++-----------------------------
  emscripten/2_build_toolchain.sh  |  26 ++++++++++++--------------
- emscripten/icu_filter.json       |  18 ++++++++++++++++++
  shared/common.sh                 |  26 +++++++++++++++++++-------
  shared/packages.ini              |   8 +++-----
  shared/packages.sh               | Bin 5521 -> 5532 bytes
- 6 files changed, 54 insertions(+), 55 deletions(-)
- create mode 100644 emscripten/icu_filter.json
+ 5 files changed, 54 insertions(+), 55 deletions(-)
 
 diff --git a/emscripten/1_download_library.sh b/emscripten/1_download_library.sh
 index 78458f7..8d2b7cd 100755
@@ -144,30 +142,6 @@ index 755a796..e3875e7 100755
  install_lib_meson $INIH_DIR $INIH_ARGS
  #install_lib $LHASA_DIR $LHASA_ARGS
  install_lib_cmake $FMT_DIR $FMT_ARGS
-diff --git a/emscripten/icu_filter.json b/emscripten/icu_filter.json
-new file mode 100644
-index 0000000..7d1b928
---- /dev/null
-+++ b/emscripten/icu_filter.json
-@@ -0,0 +1,18 @@
-+{
-+  "featureFilter": {
-+    "filterType": "feature",
-+    "excludelist": [
-+      "currency_data",
-+      "unit_data",
-+      "region_data",
-+      "zone_data"
-+    ]
-+  },
-+  "localeFilter": {
-+    "filterType": "language",
-+    "includelist": [
-+      "en", "de", "fr", "es", "it", "pt", "nl", "pl", "cs", "sk",
-+      "hu", "ro", "sv", "da", "fi", "nb", "ja", "ko", "zh"
-+    ]
-+  }
-+}
 diff --git a/shared/common.sh b/shared/common.sh
 index 4621b87..9833429 100644
 --- a/shared/common.sh
